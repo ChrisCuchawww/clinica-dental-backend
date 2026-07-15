@@ -31,10 +31,7 @@ class Servicio extends Model
         return $query->where('activo', true);
     }
 
-    /**
-     * Determina si el servicio tiene citas activas (pendientes o aprobadas).
-     * Un servicio con citas activas no puede desactivarse.
-     */
+  
     public function tieneCitasActivas(): bool
     {
         return $this->citas()

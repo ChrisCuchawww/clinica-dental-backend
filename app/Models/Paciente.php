@@ -45,10 +45,7 @@ class Paciente extends Model
         return $this->hasOne(Expediente::class);
     }
 
-    /**
-     * Determina si el paciente tiene citas activas (pendientes o aprobadas).
-     * Un paciente con citas activas no puede desactivarse.
-     */
+   
     public function tieneCitasActivas(): bool
     {
         return $this->citas()

@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class ExpedienteController extends Controller
 {
-    // Ver expediente de un paciente
     public function show(Paciente $paciente)
     {
         $expediente = $paciente->expediente;
@@ -21,7 +20,6 @@ class ExpedienteController extends Controller
         return response()->json($expediente);
     }
 
-    // Crear o actualizar expediente
     public function upsert(Request $request, Paciente $paciente)
     {
         $request->validate([

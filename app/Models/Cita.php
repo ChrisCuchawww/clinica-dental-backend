@@ -26,19 +26,16 @@ class Cita extends Model
         return $this->belongsTo(Paciente::class);
     }
 
-    // Relación muchos-a-muchos con servicios
     public function servicios()
     {
         return $this->belongsToMany(Servicio::class, 'cita_servicio')->withTimestamps();
     }
 
-    // Duración total sumando todos los servicios de la cita
     public function getDuracionTotalAttribute()
     {
         return $this->servicios->sum('duracion');
     }
 
-    // Hora de fin calculada según la duración total
     public function getHoraFinAttribute()
     {
         return Carbon::parse($this->hora)

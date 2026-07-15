@@ -12,14 +12,13 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // Registro de paciente
     public function register(RegisterPacienteRequest $request)
 {
     $user = User::create([
         'name'     => $request->nombre,
         'email'    => $request->correo,
         'password' => Hash::make($request->password),
-        'rol'      => 'paciente',  
+        'rol'      => 'paciente',
     ]);
 
     $paciente = Paciente::create([
@@ -47,7 +46,6 @@ class AuthController extends Controller
     ], 201);
 }
 
-    // Login (admin y paciente)
     public function login(Request $request)
     {
         $request->validate([
@@ -74,7 +72,6 @@ class AuthController extends Controller
             ],
         ];
 
-        // Si es paciente, mandamos su info también
         if ($user->rol === 'paciente') {
             $response['paciente'] = $user->paciente;
         }

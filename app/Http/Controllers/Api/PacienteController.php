@@ -31,7 +31,6 @@ class PacienteController extends Controller
     {
         $data = $request->validated();
 
-        // 1. Crear el User para que pueda iniciar sesión
         $user = User::create([
             'name'     => $data['nombre'],
             'email'    => $data['correo'] ?? $data['telefono'] . '@paciente.local',
@@ -39,7 +38,6 @@ class PacienteController extends Controller
             'rol'      => 'paciente',
         ]);
 
-        // 2. Crear el Paciente vinculado al User
         $paciente = Paciente::create([
             'user_id'  => $user->id,
             'nombre'   => $data['nombre'],
@@ -62,7 +60,6 @@ class PacienteController extends Controller
         $data = $request->validated();
         unset($data['password_confirmation']);
 
-        // Actualizar también el User vinculado
         if ($paciente->user_id) {
             $user = User::find($paciente->user_id);
             if ($user) {
@@ -77,7 +74,6 @@ class PacienteController extends Controller
             }
         }
 
-        // Actualizar Paciente
         if (!empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         } else {

@@ -14,7 +14,7 @@ class ServicioResource extends JsonResource
             'categoria'   => $this->categoria,
             'descripcion' => $this->descripcion,
             'precio'      => $this->precio,
-            'duracion'    => $this->duracion, // en minutos
+            'duracion'    => $this->duracion,
             'activo'      => $this->activo,
         ];
     }

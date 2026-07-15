@@ -95,10 +95,8 @@ class CitaController extends Controller
         return response()->json(['message' => 'Cita completada y pago registrado.']);
     }
 
-    // Horarios disponibles para una fecha y uno o varios servicios
     public function horariosDisponibles(Request $request)
     {
-        // El frontend manda "servicios_ids" como string "3,5,7" por query string
         if ($request->has('servicios_ids') && is_string($request->servicios_ids)) {
             $request->merge([
                 'servicios_ids' => array_filter(explode(',', $request->servicios_ids)),
@@ -129,8 +127,6 @@ class CitaController extends Controller
 
         return response()->json(['horarios' => $horariosDisponibles]);
     }
-
-    // ─── Helpers privados ───────────────────────────────────────────
 
    private function verificarDisponibilidad(string $fecha, string $hora, int $duracionNueva): bool
 {
@@ -225,11 +221,6 @@ class CitaController extends Controller
         return response()->json(new CitaResource($cita), 201);
     }
 
-    // Cancelar una cita propia (paciente). A diferencia de `cancelar()` (uso
-    // del admin, que recibe cualquier Cita vía route-model-binding sin
-    // restricción), aquí SIEMPRE se valida que la cita pertenezca al
-    // paciente autenticado antes de tocarla — si no, cualquier paciente
-    // podría cancelar la cita de otro con solo cambiar el ID en la URL.
     public function cancelarMiCita(Request $request, Cita $cita)
     {
         $paciente = Paciente::where('user_id', $request->user()->id)->first();

@@ -31,7 +31,6 @@ class ServicioController extends Controller
     {
         $data = $request->validated();
 
-        // Si se intenta desactivar el servicio, verificar que no tenga citas activas
         if (array_key_exists('activo', $data) && $data['activo'] === false && $servicio->activo === true) {
             if ($servicio->tieneCitasActivas()) {
                 return response()->json([
@@ -58,7 +57,7 @@ class ServicioController extends Controller
             ], 422);
         }
 
-        $servicio->update(['activo' => false]); // soft disable
+        $servicio->update(['activo' => false]);
         return response()->json(['message' => 'Servicio desactivado.']);
     }
 }

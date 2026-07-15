@@ -8,23 +8,23 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EstadisticasController;
 
-// ── Públicas ──────────────────────────────────────────────────────
+//Publicas
 Route::post('/login',    [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/servicios', [ServicioController::class, 'index']);
 
-// ── Cualquier usuario autenticado (paciente y admin) ──────────────
+//Cualquier usuario autenticado (paciente y admin)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me',      [AuthController::class, 'me']);
 });
 
-// ── Paciente o Admin ────────────────────────────────────────────
+//Paciente o Admin
 Route::middleware(['auth:sanctum', 'check.rol:paciente,admin'])->group(function () {
     Route::get('/citas/horarios-disponibles', [CitaController::class, 'horariosDisponibles']);
 });
 
-// ── Paciente autenticado ──────────────────────────────────────────
+//Paciente autenticado
 Route::middleware(['auth:sanctum', 'check.rol:paciente'])->group(function () {
     Route::get('/mi-perfil', [PacienteController::class, 'miPerfil']);
     Route::get('/mis-citas', [CitaController::class, 'misCitas']);
@@ -32,7 +32,7 @@ Route::middleware(['auth:sanctum', 'check.rol:paciente'])->group(function () {
     Route::patch('/mis-citas/{cita}/cancelar', [CitaController::class, 'cancelarMiCita']);
 });
 
-// ── Admin ─────────────────────────────────────────────────────────
+//Admin
 Route::middleware(['auth:sanctum', 'check.rol:admin'])->group(function () {
     Route::get('/dashboard',           [DashboardController::class, 'index']);
     Route::get('/dashboard/ganancias', [DashboardController::class, 'ganancias']);

@@ -43,12 +43,6 @@ class EstadisticasController extends Controller
             ->groupBy('estado')
             ->pluck('total', 'estado');
 
-        // NOTA: 'servicio_id' ya no existe en `citas`. Los servicios de una
-        // cita ahora viven en la tabla pivote `cita_servicio` (relación
-        // muchos-a-muchos). Por eso agrupamos vía join en lugar de una
-        // columna directa, y usamos `servicios.nombre` en vez de la
-        // relación `servicio()` (que tampoco existe; el modelo solo tiene
-        // `servicios()` en plural).
         $serviciosTop = DB::table('cita_servicio')
             ->join('citas', 'citas.id', '=', 'cita_servicio.cita_id')
             ->join('servicios', 'servicios.id', '=', 'cita_servicio.servicio_id')
