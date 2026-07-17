@@ -136,7 +136,7 @@ class PacienteController extends Controller
         }
 
         $user->update([
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($request->password_nueva),
         ]);
 
         return response()->json(['message' => 'Contraseña actualizada correctamente.']);

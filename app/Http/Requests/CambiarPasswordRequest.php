@@ -11,18 +11,18 @@ class CambiarPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'password_actual'      => 'required|string',
-            'password'              => 'required|string|min:8|confirmed',
+            'password_actual'  => 'required|string',
+            'password_nueva'   => 'required|string|min:8|confirmed',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'password_actual.required' => 'Debes ingresar tu contraseña actual.',
-            'password.required'         => 'La nueva contraseña es obligatoria.',
-            'password.min'              => 'La nueva contraseña debe tener al menos 8 caracteres.',
-            'password.confirmed'        => 'La confirmación de contraseña no coincide.',
+            'password_actual.required'   => 'Debes ingresar tu contraseña actual.',
+            'password_nueva.required'    => 'La nueva contraseña es obligatoria.',
+            'password_nueva.min'         => 'La nueva contraseña debe tener al menos 8 caracteres.',
+            'password_nueva.confirmed'   => 'La confirmación de contraseña no coincide.',
         ];
     }
 }
