@@ -95,7 +95,7 @@ class CitaController extends Controller
         return response()->json(['message' => 'Cita completada y pago registrado.']);
     }
 
-   public function horariosDisponibles(Request $request)
+public function horariosDisponibles(Request $request)
 {
     if ($request->has('servicios_ids') && is_string($request->servicios_ids)) {
         $request->merge([
@@ -113,7 +113,7 @@ class CitaController extends Controller
     $horariosOcupados = $this->getHorariosOcupados($request->fecha, $duracionTotal);
 
     $esHoy = Carbon::parse($request->fecha)->isSameDay(Carbon::now());
-    $ahora = Carbon::now();
+    $limiteMinimo = Carbon::now()->addHours(2);
 
     $horariosDisponibles = [];
     $inicio = Carbon::parse('09:00');
@@ -124,9 +124,9 @@ class CitaController extends Controller
         $finBloque = $inicio->copy()->addMinutes($duracionTotal);
 
         $horarioCompleto = Carbon::parse($request->fecha . ' ' . $hora);
-        $yaPaso = $esHoy && $horarioCompleto->lessThan($ahora);
+        $noCumpleAnticipacion = $esHoy && $horarioCompleto->lessThan($limiteMinimo);
 
-        if (!in_array($hora, $horariosOcupados) && $finBloque->lessThanOrEqualTo($fin) && !$yaPaso) {
+        if (!in_array($hora, $horariosOcupados) && $finBloque->lessThanOrEqualTo($fin) && !$noCumpleAnticipacion) {
             $horariosDisponibles[] = $hora;
         }
         $inicio->addMinutes(30);

@@ -62,10 +62,10 @@ class AgendarCitaRequest extends FormRequest
                 'ahora' => Carbon::now()->toDateTimeString(),
             ]);
 
-            if ($fechaHoraCita->lessThan(Carbon::now())) {
+            if ($fechaHoraCita->lessThan(Carbon::now()->addHours(2))) {
                 $validator->errors()->add(
                     'hora',
-                    'No puedes agendar una cita en un horario que ya pasó.'
+                    'Debes agendar con al menos 2 horas de anticipación.'
                 );
             }
         });
