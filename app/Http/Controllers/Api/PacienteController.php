@@ -16,14 +16,17 @@ class PacienteController extends Controller
 {
     public function index()
     {
-        $pacientes = Paciente::with(['citas' => function ($q) {
-            $q->where('estado', 'completada')
-              ->where('fecha', '<=', now()->toDateString())
-              ->orderBy('fecha', 'desc');
-        }])->withCount('citas')
-           ->orderBy('activo', 'desc')
-           ->orderBy('nombre')
-           ->get();
+        $pacientes = Paciente::whereHas('user', function ($q) {
+                $q->where('rol', 'paciente');
+            })
+            ->with(['citas' => function ($q) {
+                $q->where('estado', 'completada')
+                  ->where('fecha', '<=', now()->toDateString())
+                  ->orderBy('fecha', 'desc');
+            }])->withCount('citas')
+               ->orderBy('activo', 'desc')
+               ->orderBy('nombre')
+               ->get();
 
         return PacienteResource::collection($pacientes);
     }
@@ -141,6 +144,7 @@ class PacienteController extends Controller
 
         return response()->json(['message' => 'Contraseña actualizada correctamente.']);
     }
+
     public function actualizarPerfil(Request $request)
     {
         $paciente = Paciente::where('user_id', $request->user()->id)->first();
@@ -173,7 +177,7 @@ class PacienteController extends Controller
             $user->update($userUpdate);
         }
 
-    $paciente->update($data);
+        $paciente->update($data);
 
         return new PacienteResource($paciente);
     }
