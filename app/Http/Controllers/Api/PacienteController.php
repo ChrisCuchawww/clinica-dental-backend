@@ -51,7 +51,7 @@ class PacienteController extends Controller
 
     public function show(Paciente $paciente)
     {
-        $paciente->load('citas.servicio');
+        $paciente->load('citas.servicios');
         return new PacienteResource($paciente);
     }
 

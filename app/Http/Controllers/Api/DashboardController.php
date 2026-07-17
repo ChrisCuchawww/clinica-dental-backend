@@ -22,7 +22,7 @@ class DashboardController extends Controller
             'ganancias_hoy'     => Cita::whereDate('fecha', $hoy)->where('estado', 'completada')->sum('monto_pagado'),
             'ganancias_semana'  => Cita::whereBetween('fecha', [now()->startOfWeek(), now()->endOfWeek()])->where('estado', 'completada')->sum('monto_pagado'),
             'ganancias_mes'     => Cita::whereMonth('fecha', $hoy->month)->whereYear('fecha', $hoy->year)->where('estado', 'completada')->sum('monto_pagado'),
-            'citas_de_hoy'      => Cita::with(['paciente', 'servicio'])->whereDate('fecha', $hoy)->orderBy('hora')->get(),
+            'citas_de_hoy'      => Cita::with(['paciente', 'servicios'])->whereDate('fecha', $hoy)->orderBy('hora')->get(),
         ]);
     }
 
