@@ -40,6 +40,8 @@ class AgendarCitaRequest extends FormRequest
             $fecha = $this->input('fecha');
             $hora  = $this->input('hora');
 
+            \Log::info('AgendarCita - datos recibidos', ['fecha' => $fecha, 'hora' => $hora]);
+
             if (!$fecha || !$hora) {
                 return;
             }
@@ -47,8 +49,18 @@ class AgendarCitaRequest extends FormRequest
             try {
                 $fechaHoraCita = Carbon::createFromFormat('Y-m-d H:i', "$fecha $hora");
             } catch (\Exception $e) {
-                return; 
+                \Log::error('AgendarCita - error al parsear fecha/hora', [
+                    'fecha' => $fecha,
+                    'hora' => $hora,
+                    'error' => $e->getMessage(),
+                ]);
+                return;
             }
+
+            \Log::info('AgendarCita - comparacion', [
+                'fecha_hora_cita' => $fechaHoraCita->toDateTimeString(),
+                'ahora' => Carbon::now()->toDateTimeString(),
+            ]);
 
             if ($fechaHoraCita->lessThan(Carbon::now())) {
                 $validator->errors()->add(
