@@ -141,4 +141,40 @@ class PacienteController extends Controller
 
         return response()->json(['message' => 'Contraseña actualizada correctamente.']);
     }
+    public function actualizarPerfil(Request $request)
+    {
+        $paciente = Paciente::where('user_id', $request->user()->id)->first();
+
+        if (!$paciente) {
+            return response()->json(['message' => 'Perfil no encontrado.'], 404);
+        }
+
+        $data = $request->validate([
+            'nombre'   => 'sometimes|string|max:255',
+            'telefono' => 'sometimes|string|max:20',
+            'correo'   => [
+                'sometimes',
+                'nullable',
+                'email',
+                'unique:users,email,' . $request->user()->id,
+                'unique:pacientes,correo,' . $paciente->id,
+            ],
+        ]);
+
+        $user = $request->user();
+        $userUpdate = [];
+        if (array_key_exists('nombre', $data)) {
+            $userUpdate['name'] = $data['nombre'];
+        }
+        if (array_key_exists('correo', $data)) {
+            $userUpdate['email'] = $data['correo'];
+        }
+        if (!empty($userUpdate)) {
+            $user->update($userUpdate);
+        }
+
+    $paciente->update($data);
+
+        return new PacienteResource($paciente);
+    }
 }
