@@ -19,8 +19,7 @@ class PacienteResource extends JsonResource
             'created_at'   => $this->created_at,
             'ultima_visita' => $this->whenLoaded('citas', function () {
                 return $this->citas
-                    ->where('estado', 'completada')
-                    ->where('fecha', '<=', now()->toDateString())
+                    ->filter(fn($cita) => $cita->estado === 'completada' && $cita->fecha <= now())
                     ->sortByDesc('fecha')
                     ->first()
                     ?->fecha;
