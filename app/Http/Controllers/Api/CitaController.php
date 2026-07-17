@@ -95,38 +95,45 @@ class CitaController extends Controller
         return response()->json(['message' => 'Cita completada y pago registrado.']);
     }
 
-    public function horariosDisponibles(Request $request)
-    {
-        if ($request->has('servicios_ids') && is_string($request->servicios_ids)) {
-            $request->merge([
-                'servicios_ids' => array_filter(explode(',', $request->servicios_ids)),
-            ]);
-        }
-
-        $request->validate([
-            'fecha'           => 'required|date',
-            'servicios_ids'   => 'required|array|min:1',
-            'servicios_ids.*' => 'exists:servicios,id',
+   public function horariosDisponibles(Request $request)
+{
+    if ($request->has('servicios_ids') && is_string($request->servicios_ids)) {
+        $request->merge([
+            'servicios_ids' => array_filter(explode(',', $request->servicios_ids)),
         ]);
-
-        $duracionTotal = (int) Servicio::whereIn('id', $request->servicios_ids)->sum('duracion');
-        $horariosOcupados = $this->getHorariosOcupados($request->fecha, $duracionTotal);
-
-        $horariosDisponibles = [];
-        $inicio = Carbon::parse('09:00');
-        $fin    = Carbon::parse('18:00');
-
-        while ($inicio->lessThan($fin)) {
-            $hora = $inicio->format('H:i');
-            $finBloque = $inicio->copy()->addMinutes($duracionTotal);
-            if (!in_array($hora, $horariosOcupados) && $finBloque->lessThanOrEqualTo($fin)) {
-                $horariosDisponibles[] = $hora;
-            }
-            $inicio->addMinutes(30);
-        }
-
-        return response()->json(['horarios' => $horariosDisponibles]);
     }
+
+    $request->validate([
+        'fecha'           => 'required|date',
+        'servicios_ids'   => 'required|array|min:1',
+        'servicios_ids.*' => 'exists:servicios,id',
+    ]);
+
+    $duracionTotal = (int) Servicio::whereIn('id', $request->servicios_ids)->sum('duracion');
+    $horariosOcupados = $this->getHorariosOcupados($request->fecha, $duracionTotal);
+
+    $esHoy = Carbon::parse($request->fecha)->isSameDay(Carbon::now());
+    $ahora = Carbon::now();
+
+    $horariosDisponibles = [];
+    $inicio = Carbon::parse('09:00');
+    $fin    = Carbon::parse('18:00');
+
+    while ($inicio->lessThan($fin)) {
+        $hora = $inicio->format('H:i');
+        $finBloque = $inicio->copy()->addMinutes($duracionTotal);
+
+        $horarioCompleto = Carbon::parse($request->fecha . ' ' . $hora);
+        $yaPaso = $esHoy && $horarioCompleto->lessThan($ahora);
+
+        if (!in_array($hora, $horariosOcupados) && $finBloque->lessThanOrEqualTo($fin) && !$yaPaso) {
+            $horariosDisponibles[] = $hora;
+        }
+        $inicio->addMinutes(30);
+    }
+
+    return response()->json(['horarios' => $horariosDisponibles]);
+}
 
    private function verificarDisponibilidad(string $fecha, string $hora, int $duracionNueva): bool
 {

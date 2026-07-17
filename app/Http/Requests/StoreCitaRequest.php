@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Carbon\Carbon;
 
 class StoreCitaRequest extends FormRequest
 {
@@ -33,5 +35,30 @@ class StoreCitaRequest extends FormRequest
             'hora.required'           => 'La hora es obligatoria.',
             'hora.date_format'        => 'La hora debe tener formato HH:MM.',
         ];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $fecha = $this->input('fecha');
+            $hora  = $this->input('hora');
+
+            if (!$fecha || !$hora) {
+                return;
+            }
+
+            try {
+                $fechaHoraCita = Carbon::createFromFormat('Y-m-d H:i', "$fecha $hora");
+            } catch (\Exception $e) {
+                return;
+            }
+
+            if ($fechaHoraCita->lessThan(Carbon::now())) {
+                $validator->errors()->add(
+                    'hora',
+                    'No puedes agendar una cita en un horario que ya pasó.'
+                );
+            }
+        });
     }
 }
