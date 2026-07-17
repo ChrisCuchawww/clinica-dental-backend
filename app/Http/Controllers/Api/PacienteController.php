@@ -104,7 +104,7 @@ class PacienteController extends Controller
     public function historial(Paciente $paciente)
     {
         $citas = $paciente->citas()
-            ->with('servicio')
+            ->with('servicios')
             ->orderBy('fecha', 'desc')
             ->get();
 
