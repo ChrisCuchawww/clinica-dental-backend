@@ -1,0 +1,49 @@
+[33mcommit a17182040f94cd2b905119a81a1a71e611a471d7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: ChrisCuchawww <chritianmacias@gmail.com>
+Date:   Fri Jul 17 10:39:22 2026 -0600
+
+    Funcionando bien el panel de citas
+
+[1mdiff --git a/app/Http/Requests/AgendarCitaRequest.php b/app/Http/Requests/AgendarCitaRequest.php[m
+[1mindex 744ec10..64e709e 100644[m
+[1m--- a/app/Http/Requests/AgendarCitaRequest.php[m
+[1m+++ b/app/Http/Requests/AgendarCitaRequest.php[m
+[36m@@ -3,6 +3,8 @@[m
+ namespace App\Http\Requests;[m
+ [m
+ use Illuminate\Foundation\Http\FormRequest;[m
+[32m+[m[32muse Illuminate\Contracts\Validation\Validator;[m
+[32m+[m[32muse Carbon\Carbon;[m
+ [m
+ class AgendarCitaRequest extends FormRequest[m
+ {[m
+[36m@@ -31,4 +33,29 @@[m [mpublic function messages(): array[m
+             'hora.date_format'        => 'La hora debe tener formato HH:MM.',[m
+         ];[m
+     }[m
+[32m+[m
+[32m+[m[32m    public function withValidator(Validator $validator): void[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $validator->after(function (Validator $validator) {[m
+[32m+[m[32m            $fecha = $this->input('fecha');[m
+[32m+[m[32m            $hora  = $this->input('hora');[m
+[32m+[m
+[32m+[m[32m            if (!$fecha || !$hora) {[m
+[32m+[m[32m                return;[m
+[32m+[m[32m            }[m
+[32m+[m
+[32m+[m[32m            try {[m
+[32m+[m[32m                $fechaHoraCita = Carbon::createFromFormat('Y-m-d H:i', "$fecha $hora");[m
+[32m+[m[32m            } catch (\Exception $e) {[m
+[32m+[m[32m                return;[m[41m [m
+[32m+[m[32m            }[m
+[32m+[m
+[32m+[m[32m            if ($fechaHoraCita->lessThan(Carbon::now())) {[m
+[32m+[m[32m                $validator->errors()->add([m
+[32m+[m[32m                    'hora',[m
+[32m+[m[32m                    'No puedes agendar una cita en un horario que ya pasó.'[m
+[32m+[m[32m                );[m
+[32m+[m[32m            }[m
+[32m+[m[32m        });[m
+[32m+[m[32m    }[m
+ }[m
