@@ -27,6 +27,7 @@ Route::middleware(['auth:sanctum', 'check.rol:paciente,admin'])->group(function 
 //Paciente autenticado
 Route::middleware(['auth:sanctum', 'check.rol:paciente'])->group(function () {
     Route::get('/mi-perfil', [PacienteController::class, 'miPerfil']);
+    Route::patch('/mi-perfil/password', [PacienteController::class, 'cambiarPassword']);
     Route::get('/mis-citas', [CitaController::class, 'misCitas']);
     Route::post('/mis-citas', [CitaController::class, 'agendarCita']);
     Route::patch('/mis-citas/{cita}/cancelar', [CitaController::class, 'cancelarMiCita']);

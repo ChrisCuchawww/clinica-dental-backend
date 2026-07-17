@@ -10,6 +10,7 @@ use App\Models\Paciente;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\CambiarPasswordRequest;
 
 class PacienteController extends Controller
 {
@@ -121,5 +122,23 @@ class PacienteController extends Controller
 
         $paciente->load('citas.servicios');
         return new PacienteResource($paciente);
+    }
+
+    public function cambiarPassword(CambiarPasswordRequest $request)
+    {
+        $user = $request->user();
+
+        if (!Hash::check($request->password_actual, $user->password)) {
+            return response()->json([
+                'message' => 'La contraseña actual es incorrecta.',
+                'errors' => ['password_actual' => ['La contraseña actual es incorrecta.']],
+            ], 422);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json(['message' => 'Contraseña actualizada correctamente.']);
     }
 }
