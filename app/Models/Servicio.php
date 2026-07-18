@@ -23,7 +23,7 @@ class Servicio extends Model
 
     public function citas()
     {
-        return $this->hasMany(Cita::class);
+        return $this->belongsToMany(Cita::class, 'cita_servicio')->withTimestamps();
     }
 
     public function scopeActivos($query)
@@ -31,7 +31,7 @@ class Servicio extends Model
         return $query->where('activo', true);
     }
 
-  
+
     public function tieneCitasActivas(): bool
     {
         return $this->citas()
